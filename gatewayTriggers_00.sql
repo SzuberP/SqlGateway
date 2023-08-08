@@ -88,20 +88,30 @@ BEGIN
 	
 	DECLARE @PersonProjectID int
 	DECLARE @ProjectID int
+    DECLARE @PersonID int
 	DECLARE @NumCompletedTrainings int
 	DECLARE @NumTrainingsProject int
+    DECLARE @Title nvarchar(100)
+    DECLARE @Email nvarchar(100) 
+    DECLARE @ProjectName nvarchar(100)
 
-	SET @PersonProjectID = (SELECT PersonProjectID FROM inserted)	
+	SET @PersonProjectID = (SELECT PersonProjectID FROM inserted)
+
 	SET @ProjectID = (SELECT ProjectID FROM PersonProject WHERE PersonProjectID = @PersonProjectID)
+    SET @PersonID = (SELECT PersonID FROM PersonProject WHERE PersonProjectID = @PersonProjectID)
 
-	SET @NumTrainingsProject = (SELECT COUNT(*) FROM Trainings WHERE ProjectID = @ProjectID)
-	SET @NumCompletedTrainings = (SELECT COUNT(*) FROM CompletedTrainings WHERE PersonProjectID = @PersonProjectID)
+	SET @Title = (SELECT Title FROM People_Details WHERE PersonDetailsID = @PersonID)
+    SET @Email = (SELECT Email FROM People_Details WHERE PersonDetailsID = @PersonID) 
+    SET @ProjectName = (SELECT ProjectName FROM Projects WHERE ProjectID = @ProjectID)     
 
-	IF @NumCompletedTrainings = @NumTrainingsProject
+	SET @NumTrainingsProject = (SELECT COUNT(*) FROM Trainings WHERE ProjectID = @ProjectID AND Mandatory = 1)
+	SET @NumCompletedTrainings = (SELECT COUNT(*) FROM CompletedTrainings ct JOIN Trainings t ON ct.TrainingID = t.TrainingID WHERE t.Mandatory = 1 AND ct.PersonProjectID = @PersonProjectID)
+
+	IF @NumCompletedTrainings >= @NumTrainingsProject
 		BEGIN
 
-		INSERT INTO InductionCompleted (PersonProjectId, CompletedDate)
-		VALUES (@PersonProjectID, CAST(GETDATE() AS DATE))
+		INSERT INTO InductionCompleted (PersonProjectId, CompletedDate, Title, Email, ProjectName)
+		VALUES (@PersonProjectID, CAST(GETDATE() AS DATE), @Title, @Email, @ProjectName)
 
 		END
 
