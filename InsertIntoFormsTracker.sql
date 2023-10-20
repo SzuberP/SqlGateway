@@ -30,7 +30,10 @@ BEGIN
 
     EXECUTE InsertDestGroups_00 
         @FormTrackerID,
-        @GroupsIdsList;       
+        @GroupsIdsList; 
+
+	-- returning 
+	SELECT  SCOPE_IDENTITY() AS [SCOPE_IDENTITY]     
     
 
 END
