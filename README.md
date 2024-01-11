@@ -1,6 +1,6 @@
 # SqlGateway
 
-SQL Gateway is an powerapps based interface of sql projects database. 
+SQL Gateway is the powerapps based interface of sql projects database. 
 
 ## Project Team
 
